@@ -1,5 +1,6 @@
 
 import pandas as pd
+import plotly.graph_objects as go
 import plotly.express as px
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
@@ -13,6 +14,47 @@ df['mês_do_churn'] = df['mês_do_churn'].str.strip()
 # Dados de supply chain
 supply = pd.read_excel("Insumos_Supply_Chain_Mottu.xlsx")
 
+# Gráfico combinado
+fig_supply = go.Figure()
+fig_supply.add_trace(go.Bar(
+    x=supply["Tipo de Transporte"],
+    y=supply["Custo Fixo por Viagem (R$)"],
+    name="Custo por Viagem (R$)",
+    marker_color="indianred",
+    yaxis="y1"
+))
+fig_supply.add_trace(go.Scatter(
+    x=supply["Tipo de Transporte"],
+    y=supply["Tempo Médio de Transporte"],
+    name="Tempo Médio de Entrega (dias)",
+    mode="lines+markers",
+    marker_color="blue",
+    yaxis="y2"
+))
+fig_supply.update_layout(
+    title="Custo por Viagem e Tempo Médio de Entrega por Modal de Transporte",
+    xaxis=dict(title="Tipo de Transporte"),
+    yaxis=dict(
+        title="Custo por Viagem (R$)",
+        titlefont=dict(color="indianred"),
+        tickfont=dict(color="indianred"),
+        anchor="x",
+        side="left"
+    ),
+    yaxis2=dict(
+        title="Tempo Médio de Entrega (dias)",
+        titlefont=dict(color="blue"),
+        tickfont=dict(color="blue"),
+        overlaying="y",
+        side="right"
+    ),
+    legend=dict(x=0.7, y=1),
+    width=950,
+    height=500,
+    bargap=0.2
+)
+
+# Iniciar app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Dashboard Unificado Mottu"
 
@@ -21,18 +63,7 @@ app.layout = html.Div([
 
     dcc.Tabs([
         dcc.Tab(label='Parte 1 - Supply Chain', children=[
-            dcc.Graph(
-                figure=px.bar(supply, x='Tipo de Transporte', y='Custo Fixo por Viagem (R$)',
-                              title='Custo Fixo por Viagem por Modal',
-                              color='Custo Fixo por Viagem (R$)',
-                              color_continuous_scale="Reds")
-            ),
-            dcc.Graph(
-                figure=px.bar(supply, x='Tipo de Transporte', y='Tempo Médio de Transporte',
-                              title='Tempo Médio de Transporte por Modal',
-                              color='Tempo Médio de Transporte',
-                              color_continuous_scale="Blues")
-            )
+            dcc.Graph(figure=fig_supply)
         ]),
 
         dcc.Tab(label='Parte 2 - Churn', children=[
@@ -120,11 +151,12 @@ def atualizar_graficos(idade_range, regioes, motivos, meses):
 
     fig1 = px.histogram(filtro, y="motivo_do_churn", title="Motivos do Churn", color_discrete_sequence=["indianred"])
     fig2 = px.histogram(filtro, x="região", title="Distribuição por Região", color_discrete_sequence=["teal"])
-    fig3 = px.histogram(filtro, x="idade", title="Distribuição de Idade", nbins=20, color_discrete_sequence=["orange"])
+    fig3 = px.histogram(filtro, x="idade", title="Distribuição de Idade", nbins=15, color_discrete_sequence=["orange"])
+    fig3.update_traces(marker_line_width=1, marker_line_color="white")
+    fig3.update_layout(bargap=0.2)
     fig4 = px.histogram(filtro, x="mês_do_churn", title="Churn por Mês", color_discrete_sequence=["steelblue"])
 
     return fig1, fig2, fig3, fig4
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
-
