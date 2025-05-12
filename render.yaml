@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: mottu-dashboard
+    env: python
+    buildCommand: ""
+    startCommand: python dashboard_mottu_unificado_corrigido.py
+    plan: free
