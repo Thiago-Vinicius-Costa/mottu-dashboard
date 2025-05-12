@@ -126,4 +126,5 @@ def atualizar_graficos(idade_range, regioes, motivos, meses):
     return fig1, fig2, fig3, fig4
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)
+
