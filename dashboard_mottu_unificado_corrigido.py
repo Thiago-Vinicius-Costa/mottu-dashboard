@@ -26,37 +26,38 @@ dcc.Tabs([
         dcc.Graph(
             figure=go.Figure([
                 go.Bar(
-                    x=supply["Tipo de Transporte"],
-                    y=supply["Custo Fixo por Viagem (R$)"],
-                    name="Custo por Viagem (R$)",
+                    x=supply["Filial"],
+                    y=supply["Custo por Viagem (mil R$)"],
+                    name="Custo por Viagem (mil R$)",
                     marker_color="indianred",
                     yaxis="y1"
                 ),
                 go.Scatter(
-                    x=supply["Tipo de Transporte"],
-                    y=supply["Tempo Médio de Transporte"],
-                    name="Tempo Médio de Entrega (dias)",
+                    x=supply["Filial"],
+                    y=supply["Tempo Médio Atual (dias)"],
+                    name="Tempo Médio Atual (dias)",
                     mode="lines+markers",
-                    marker_color="blue",
+                    marker=dict(color="blue"),
+                    line=dict(color="blue"),
                     yaxis="y2"
                 )
             ]).update_layout(
-                title="Custo por Viagem e Tempo Médio de Entrega por Modal de Transporte",
-                xaxis=dict(title="Tipo de Transporte"),
+                title="Custo por Viagem vs Tempo Médio de Entrega por Filial",
+                xaxis=dict(title="Filial"),
                 yaxis=dict(
-                    title=dict(text="Custo por Viagem (R$)", font=dict(color="indianred")),
-                    tickfont=dict(color="indianred"),
-                    side="left"
+                    title="Custo por Viagem (mil R$)",
+                    titlefont=dict(color="indianred"),
+                    tickfont=dict(color="indianred")
                 ),
                 yaxis2=dict(
-                    title=dict(text="Tempo Médio de Entrega (dias)", font=dict(color="blue")),
+                    title="Tempo Médio Atual (dias)",
+                    titlefont=dict(color="blue"),
                     tickfont=dict(color="blue"),
                     overlaying="y",
                     side="right"
                 ),
-                legend=dict(x=0.7, y=1),
-                bargap=0.2,
-                height=500,
+                legend=dict(x=0.5, y=1.15, orientation="h", xanchor="center"),
+                margin=dict(l=60, r=60, t=80, b=60),
                 template="plotly_white"
             )
         )
