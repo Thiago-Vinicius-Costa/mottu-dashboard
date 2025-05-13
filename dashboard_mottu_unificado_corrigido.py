@@ -18,23 +18,48 @@ app.title = "Dashboard Unificado Mottu"
 
 app.layout = html.Div([
     html.H2("Dashboard Interativo - Mottu", style={"textAlign": "center"}),
-
-    dcc.Tabs([
-        dcc.Tab(label='Parte 1 - Supply Chain', children=[
-            dcc.Graph(
-                figure=px.bar(supply, x='Tipo de Transporte', y='Custo Fixo por Viagem (R$)',
-                              title='Custo Fixo por Viagem por Modal',
-                              color='Custo Fixo por Viagem (R$)',
-                              color_continuous_scale="Reds")
-            ),
-            dcc.Graph(
-                figure=px.bar(supply, x='Tipo de Transporte', y='Tempo Médio de Transporte',
-                              title='Tempo Médio de Transporte por Modal',
-                              color='Tempo Médio de Transporte',
-                              color_continuous_scale="Blues")
+#editei daqui 
+dcc.Tabs([
+    dcc.Tab(label='Parte 1 - Supply Chain', children=[
+        dcc.Graph(
+            figure=go.Figure([
+                go.Bar(
+                    x=supply["Tipo de Transporte"],
+                    y=supply["Custo Fixo por Viagem (R$)"],
+                    name="Custo por Viagem (R$)",
+                    marker_color="indianred",
+                    yaxis="y1"
+                ),
+                go.Scatter(
+                    x=supply["Tipo de Transporte"],
+                    y=supply["Tempo Médio de Transporte"],
+                    name="Tempo Médio de Entrega (dias)",
+                    mode="lines+markers",
+                    marker_color="blue",
+                    yaxis="y2"
+                )
+            ]).update_layout(
+                title="Custo por Viagem e Tempo Médio de Entrega por Modal de Transporte",
+                xaxis=dict(title="Tipo de Transporte"),
+                yaxis=dict(
+                    title=dict(text="Custo por Viagem (R$)", font=dict(color="indianred")),
+                    tickfont=dict(color="indianred"),
+                    side="left"
+                ),
+                yaxis2=dict(
+                    title=dict(text="Tempo Médio de Entrega (dias)", font=dict(color="blue")),
+                    tickfont=dict(color="blue"),
+                    overlaying="y",
+                    side="right"
+                ),
+                legend=dict(x=0.7, y=1),
+                bargap=0.2,
+                height=500,
+                template="plotly_white"
             )
-        ]),
-
+        )
+    ]),
+#ate aqui
         dcc.Tab(label='Parte 2 - Churn', children=[
             html.Div([
                 dbc.Row([
