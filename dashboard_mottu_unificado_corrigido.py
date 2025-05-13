@@ -1,71 +1,67 @@
-
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 
-
-# Dados de churn
+# Carrega os dados
 df = pd.read_excel("Base_Completa_Churn_Mottu.xlsx")
 df.columns = [col.strip().replace(" ", "_").lower() for col in df.columns]
 df['motivo_do_churn'] = df['motivo_do_churn'].str.strip()
 df['mês_do_churn'] = df['mês_do_churn'].str.strip()
+
 df_filiais = pd.read_excel("Insumos_Supply_Chain_Mottu.xlsx", sheet_name="Filiais - Análise")
 
-
-# Dados de supply chain
-supply = pd.read_excel("Insumos_Supply_Chain_Mottu.xlsx")
-
+# Inicializa o app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Dashboard Unificado Mottu"
 
+# Layout
 app.layout = html.Div([
     html.H2("Dashboard Interativo - Mottu", style={"textAlign": "center"}),
-#editei daqui 
 
-dcc.Tab(label='Parte 1 - Supply Chain', children=[
-    html.Div([
-        dcc.Graph(
-            figure=go.Figure([
-                go.Bar(
-                    x=df_filiais["Filial"],
-                    y=df_filiais["Custo por Viagem (mil R$)"],
-                    name="Custo por Viagem (mil R$)",
-                    marker_color="indianred",
-                    yaxis="y1"
-                ),
-                go.Scatter(
-                    x=df_filiais["Filial"],
-                    y=df_filiais["Tempo Médio Atual (dias)"],
-                    name="Tempo Médio Atual (dias)",
-                    mode="lines+markers",
-                    marker=dict(color="blue"),
-                    line=dict(color="blue"),
-                    yaxis="y2"
+    dcc.Tabs([
+        dcc.Tab(label='Parte 1 - Supply Chain', children=[
+            html.Div([
+                dcc.Graph(
+                    figure=go.Figure([
+                        go.Bar(
+                            x=df_filiais["Filial"],
+                            y=df_filiais["Custo por Viagem (mil R$)"],
+                            name="Custo por Viagem (mil R$)",
+                            marker_color="indianred",
+                            yaxis="y1"
+                        ),
+                        go.Scatter(
+                            x=df_filiais["Filial"],
+                            y=df_filiais["Tempo Médio Atual (dias)"],
+                            name="Tempo Médio Atual (dias)",
+                            mode="lines+markers",
+                            marker=dict(color="blue"),
+                            line=dict(color="blue"),
+                            yaxis="y2"
+                        )
+                    ]).update_layout(
+                        title="Custo por Viagem vs Tempo Médio de Entrega por Filial",
+                        xaxis=dict(title="Filial"),
+                        yaxis=dict(
+                            title="Custo por Viagem (mil R$)",
+                            tickfont=dict(color="indianred")
+                        ),
+                        yaxis2=dict(
+                            title="Tempo Médio Atual (dias)",
+                            tickfont=dict(color="blue"),
+                            overlaying="y",
+                            side="right"
+                        ),
+                        legend=dict(x=0.5, y=1.15, orientation="h", xanchor="center"),
+                        margin=dict(l=60, r=60, t=80, b=60),
+                        template="plotly_white"
+                    )
                 )
-            ]).update_layout(
-                title="Custo por Viagem vs Tempo Médio de Entrega por Filial",
-                xaxis=dict(title="Filial"),
-                yaxis=dict(
-                    title="Custo por Viagem (mil R$)",
-                    tickfont=dict(color="indianred")
-                ),
-                yaxis2=dict(
-                    title="Tempo Médio Atual (dias)",
-                    tickfont=dict(color="blue"),
-                    overlaying="y",
-                    side="right"
-                ),
-                legend=dict(x=0.5, y=1.15, orientation="h", xanchor="center"),
-                margin=dict(l=60, r=60, t=80, b=60),
-                template="plotly_white"
-            )
-        )
-    ])
-])
+            ])
+        ]),
 
-#ate aqui
         dcc.Tab(label='Parte 2 - Churn', children=[
             html.Div([
                 dbc.Row([
@@ -127,6 +123,7 @@ dcc.Tab(label='Parte 1 - Supply Chain', children=[
     ])
 ])
 
+# Callback
 @app.callback(
     [Output('grafico-motivos', 'figure'),
      Output('grafico-regiao', 'figure'),
