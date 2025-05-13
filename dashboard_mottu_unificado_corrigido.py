@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
+
 
 # Dados de churn
 df = pd.read_excel("Base_Completa_Churn_Mottu.xlsx")
